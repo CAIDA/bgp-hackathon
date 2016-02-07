@@ -107,20 +107,6 @@ class BGPCollectorStream():
                     peer_route_trie.single_level_search(elem.fields['prefix'])
                 print single_level_prefixes
 
-                for prefix in single_level_prefixes:
-                    trie_node = peer_route_trie.search_exact(str(prefix))
-                    as_path = trie_node.data['as-path'].split(" ")
-                    as_path_headless = as_path[1:-1]
-                    print "AS-Path : ", as_path
-                    as_headless_len = len(as_path_headless)
-                    if as_headless_len > 1:
-                        for i in range(0, as_headless_len-1):
-                            print as_path_headless[i], as_path_headless[i+1]
-                            if as_path_headless[i] in self.aslink_datastore:
-                                self.aslink_datastore[as_path_headless[i]] += 1
-                            else:
-                                self.aslink_datastore[as_path_headless[i]] = 1
-
                 prefix_count = len(single_level_prefixes)
                 root_24_prefix_count = 0
                 lr_24_prefix_count1 = lr_24_prefix_count2 = 0
@@ -128,11 +114,11 @@ class BGPCollectorStream():
                 # The /24 prefixes below the advertised prefix are calculated
                 # as all the /24 prefixes served by the root - sum of the /24
                 # prefixes served by root's children
-                if (prefix_count == 1):
+                if prefix_count == 1:
                     root_24_prefix_count = \
                         2 ** (24 - int(str(single_level_prefixes[0]).lstrip('<')
                                        .rstrip('>').split('/')[1]))
-                elif (prefix_count == 2):
+                elif prefix_count == 2:
                     root_24_prefix_count = \
                         2 ** (24 - int(str(single_level_prefixes[0]).lstrip('<')
                                        .rstrip('>').split('/')[1]))
@@ -154,7 +140,24 @@ class BGPCollectorStream():
                     root_24_prefix_count - (lr_24_prefix_count1 +
                                             lr_24_prefix_count2)
 
-                print elem.fields['as-path'], effective_24_prefix_count
+                print "Effective Prefix Count : ", \
+                    effective_24_prefix_count
+
+                for prefix in single_level_prefixes:
+                    trie_node = peer_route_trie.search_exact(str(prefix))
+                    as_path = trie_node.data['as-path'].split(" ")
+                    as_path_headless = as_path[1:-1]
+                    print "AS-Path : ", as_path
+                    as_headless_len = len(as_path_headless)
+                    if as_headless_len > 1:
+                        for i in range(0, as_headless_len - 1):
+                            print "Headless nodes : ", as_path_headless[i], \
+                                as_path_headless[i + 1]
+                            if as_path_headless[i] in self.aslink_datastore:
+                                self.aslink_datastore[as_path_headless[i]] += 1
+                            else:
+                                self.aslink_datastore[as_path_headless[i]] = 1
+
                 elem = rec.get_next_elem()
 
 
