@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://atlas-stream.ripe.net/socket.io.js"></script>
+    <script>
+
+        var socket = io("http://localhost:8080", { path : "/socket.io" });
+
+        socket.emit("bgp_subscribe", { prefix: "110.170.17.0/24" });
+
+        socket.on("bgp_dumpLine", function(result){
+            console.log("I received ", result);
+        });
+
+        socket.on("bgp_update", function(result){
+            console.log("I received ", result);
+        });
+
+        socket.on("bgp_error", function(result){
+            console.log("error ", result);
+        });
+
+        socket.on("bgp_endOfDump", function(){
+            console.log("end of dump");
+        });
+
+    </script>
+
+</head>
+<body>
+
+</body>
+</html>
