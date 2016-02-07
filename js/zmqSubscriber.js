@@ -1,7 +1,7 @@
 var zmq = require('zmq');
 var config = require('./config');
 
-var zmqConnector = function() {
+var zmqSubscriber = function() {
 
     this.subscribeStream = function(subMode, callback) {
         var url = 'tcp://' + config.zmq_host + ':' + config.zmq_port.toString();
@@ -32,11 +32,11 @@ var zmqConnector = function() {
 };
 
 /*
-var connector = new zmqConnector()
+var connector = new zmqSubscriber()
 connector.subscribeStream(
   {type: 'router', value: '195.208.209.109'},
   function(evt, data) { console.log(data); },
 );
 */
 
-module.exports = zmqConnector;
+module.exports = zmqSubscriber;

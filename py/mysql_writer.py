@@ -4,7 +4,7 @@ import threading
 import time
 import json
 
-class MySqlDAL(threading.Thread):
+class MysqlWriter(threading.Thread):
   def __init__(self):
     threading.Thread.__init__(self)
     self.connect()
@@ -67,7 +67,7 @@ class MySqlDAL(threading.Thread):
       print('Failed to remove routes from db. %s' % str(e))
 
 #r1 = {'router':'r1', 'prefix':'adkfjoiaf', 'origin_asn': 1234, 'timestamp': 12145334643, 'communities': '123:124 3554:4654'}
-#a = MySqlDAL()
+#a = MysqlWriter()
 #a.add(r1)
 
 #a.run()

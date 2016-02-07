@@ -1,79 +1,21 @@
-/**
- * Copyright 2016 - mcandela
- * Date: 06/02/16
- * Time: 22:44
- * See LICENSE.txt for information about the license.
- */
-var config = require('./config');
-var server = require('http').createServer();
-var io = require('socket.io')(server);
+var config = {
+    host: "localhost",
+    user: "has",
+    password: "mohib",
+    database: "koken",
+    table: "bgp_routes",
+    port:8080,
 
-var mysqlConnector = require('./mysqlConnector');
+    zmq_port: 12345,
+    zmq_host: "127.0.0.1",
 
-var zmqConnector = require('./zmqConnector');
-var streamingConnector = new zmqConnector();
-
-var checkParameters = function(userParams){
-    var error;
-
-    error = true;
-
-    if (!userParams.asn && !userParams.prefix){
-        error = "ans or prefix are needed";
+    eventsNames: {
+        subscribe: "bgp_subscribe",
+        update: "bgp_update",
+        dump: "bgp_dumpLine",
+        endOfDump: "bgp_endOfDump",
+        error: "bgp_error"
     }
-
-
-    return error;
 };
 
-
-io.on('connection', function (socket) {
-    var emit, onError, zmqSocket;
-    var connector = new mysqlConnector();
-
-    emit = function(type, message){
-        socket.emit(type, message);
-    };
-
-    onError = function(error){
-        console.log(error);
-        socket.emit(config.eventsNames.error, error);
-    };
-
-    socket.on('disconnect', function() {
-        zmqSocket.close();
-    });
-
-    socket.on(config.eventsNames.subscribe, function (userParams, cb) {
-        var type, dataChecking;
-
-        dataChecking = checkParameters(userParams);
-        if (dataChecking === true){
-
-            type = (userParams.asn) ? "asn" : "prefix";
-
-            if (type == "asn"){
-                connector.getDumpByAS(userParams.asn, emit, onError);
-            } else {
-                connector.getDumpByPrefix(userParams.prefix, emit, onError);
-            }
-
-            console.log({
-                type: type, // or 'prefix' or 'all'
-                value: (type == "prefix") ? userParams.prefix : userParams.asn
-            });
-            zmqSocket = streamingConnector.subscribeStream({
-                type: type, // or 'prefix' or 'all'
-                value: (type == "prefix") ? userParams.prefix : userParams.asn
-            }, emit);
-        } else {
-            onError(dataChecking);
-        }
-    });
-
-
-});
-
-
-server.listen(config.port);
-
+module.exports = config;

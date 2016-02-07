@@ -9,20 +9,14 @@ var server = require('http').createServer();
 var io = require('socket.io')(server);
 
 var mysqlConnector = require('./mysqlConnector');
+var zmqSubscriber = require('./zmqSubscriber');
+var subscriber = new zmqSubscriber();
 
-var zmqConnector = require('./zmqConnector');
-var streamingConnector = new zmqConnector();
-
-var checkParameters = function(userParams){
-    var error;
-
-    error = true;
-
+var checkParameters = function(userParams) {
+    var error = true;
     if (!userParams.asn && !userParams.prefix){
         error = "ans or prefix are needed";
     }
-
-
     return error;
 };
 
@@ -31,17 +25,18 @@ io.on('connection', function (socket) {
     var emit, onError, zmqSocket;
     var connector = new mysqlConnector();
 
-    emit = function(type, message){
+    emit = function(type, message) {
         socket.emit(type, message);
     };
 
-    onError = function(error){
+    onError = function(error) {
         console.log(error);
         socket.emit(config.eventsNames.error, error);
     };
 
     socket.on('disconnect', function() {
-        zmqSocket.close();
+        zmqSocket && zmqSocket.close();
+        zmqSocket = null;
     });
 
     socket.on(config.eventsNames.subscribe, function (userParams, cb) {
@@ -49,7 +44,6 @@ io.on('connection', function (socket) {
 
         dataChecking = checkParameters(userParams);
         if (dataChecking === true){
-
             type = (userParams.asn) ? "asn" : "prefix";
 
             if (type == "asn"){
@@ -62,7 +56,7 @@ io.on('connection', function (socket) {
                 type: type, // or 'prefix' or 'all'
                 value: (type == "prefix") ? userParams.prefix : userParams.asn
             });
-            zmqSocket = streamingConnector.subscribeStream({
+            zmqSocket = subscriber.subscribeStream({
                 type: type, // or 'prefix' or 'all'
                 value: (type == "prefix") ? userParams.prefix : userParams.asn
             }, emit);
@@ -70,8 +64,6 @@ io.on('connection', function (socket) {
             onError(dataChecking);
         }
     });
-
-
 });
 
 

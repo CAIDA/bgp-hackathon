@@ -2,8 +2,8 @@ from _pybgpstream import BGPStream, BGPRecord, BGPElem
 import calendar
 import time
 import json
-from publisher import ZmqPublisher
-from dal import MySqlDAL
+from zmq_publisher import ZmqPublisher
+from mysql_writer import MysqlWriter
 import threading
 delay = 1800 # delay every message by 30min (to simulate RT)
 
@@ -29,8 +29,8 @@ def generate_stream():
     bs = BGPStream()
     rec = BGPRecord()
     #initialize MySql
-    a = MySqlDAL()
-    a.start()
+    db_writer = MysqlWriter()
+    db_writer.start()
 
     #initialize the publisher in port number 12345
     publisher = ZmqPublisher(12345)
@@ -66,9 +66,9 @@ def generate_stream():
 
             # Write it to DB
             if elem.type == 'A':
-                a.add(msg)
+                db_writer.add(msg)
             elif elem.type == 'W':
-                a.remove(msg)
+                db_writer.remove(msg)
             else:
                 print "Error: Unknown type: " + elem.type
             elem = rec.get_next_elem()
