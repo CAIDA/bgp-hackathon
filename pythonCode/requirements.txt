@@ -1,0 +1,3 @@
+git+https://github.com/ANSSI-FR/tabi#egg=tabi
+kafka-python
+prometheus_client
