@@ -1,5 +1,0 @@
-bgpreader -p caida-bmp -w 1453912260 -m > myroutes
-
-bgpsimple-master/bgp_simple.pl -myas 65001 -myip 127.1.0.1 -peerip 127.0.0.1 -peeras 65517 -p myroutes --nolisten
-
-bgpsimple-master/bgp_simple.pl -myas 65001 -myip 2a00:1620:c0:60:314f:da6:924:a226 -peerip 2a00:1620:c0:60:ae9e:17ff:fe81:a176 -peeras 65000 -p myroutes --nolisten -v -v -ipv6=1
