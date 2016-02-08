@@ -31,6 +31,7 @@ class MysqlWriter(threading.Thread):
       while not self.queue.empty() and reads > 0:
         reads -= 1
         action, route = self.queue.get()
+        self.queue.task_done()
         if action == last_action:
           routes.append(route)
         else:
@@ -45,19 +46,23 @@ class MysqlWriter(threading.Thread):
           self.add_routes(routes)
         else:
           self.remove_routes(routes)
-      #if self.queue.empty():
-        #time.sleep(1)
+      data = []
+      routes = []
+      if self.queue.empty():
+        time.sleep(1)
 
   def add_routes(self, routes):
     rows = map(lambda r: (r['router'], r['prefix'], r['origin_asn'], json.dumps(r)), routes)
     sql = "REPLACE INTO bgp_routes(router,prefix,origin_asn,value) VALUES (%s,%s,%s,%s)"
     try:
+      print('Adding %d entries to DB' % len(routes))
       self.cursor.executemany(sql, rows)
       self.db.commit()
     except Exception as e:
       print('Failed to add routes to db. %s' % str(e))
 
   def remove_routes(self, routes):
+    print('Removing %d entries from DB' % len(routes))
     rows = map(lambda r: (r['router'], r['prefix']), routes)
     sql = "DELETE FROM bgp_routes WHERE router=%s and prefix=%s"
     try:
