@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>STABILITY-1</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
+    <!-- Custom styles for this template -->
+    <link href="dashboard.css" rel="stylesheet">
+
+    <style>
+      svg.text {font: 8px sans-serif; }
+    </style>
+
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">STABILITY-1</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-9 col-md-12 main">
+          <h1 class="page-header">Dashboard</h1>
+
+          <h2 class="sub-header">Summary</h2>
+          <div class="row placeholders">
+	    <canvas id="myChart" width="400" height="400"></canvas>
+          </div>
+
+          <h2 class="sub-header">Details</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Prefix</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th class='text-center'>Number of BGP Updates</th>
+                  <th class='text-center'>Packet Loss Detected</th>
+                </tr>
+              </thead>
+              <tbody id="stability-1-data-table">
+              </tbody>
+            </table>
+          </div>
+          <h2 class="sub-header">Visualization</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    <script type="text/javascript">
+
+        var pie_chart_data = new Array();
+
+        var stability_data;
+        $.ajax({
+          url: "data_6h.json",
+          context: document.body
+        }).done(function( data ) {
+
+          var num_packet_loss = 0;
+          var num_no_packet_loss = 0;
+
+          var table_html = "";
+          $.each(data, function( index, value ) {
+
+
+            var start_time = new Date(0);
+            start_time.setUTCSeconds(value.start_time);
+            var end_time = new Date(0);
+            end_time.setUTCSeconds(value.end_time);
+
+            table_html += "<tr>";
+            table_html += "<td>" + value.prefix + "</td>";
+            table_html += "<td>" + start_time.toString().split(" ").slice(0,6).join(" ") + "</td>";
+            table_html += "<td>" + end_time.toString().split(" ").slice(0,6).join(" ") + "</td>";
+            table_html += "<td class='text-center'>" + value.count + "</td>";
+            if (value.packet_loss) {
+		num_packet_loss++;
+                table_html += "<td class='danger text-center'>" + value.packet_loss + "</td>";
+            } else {
+		num_no_packet_loss++;
+                table_html += "<td class='success text-center'>" + value.packet_loss + "</td>";
+            }
+            table_html += "</tr>";
+
+            $("#stability-1-data-table").html(table_html);
+          });
+          console.log(num_no_packet_loss);
+
+          pie_chart_data = [
+		{
+			value: num_packet_loss,
+			color: "#F7464A",
+			highlight: "#FF5A5E",
+        		label: "Prefixes With Packet Loss"
+		},
+		{
+			value: num_no_packet_loss,
+			color: "#46BFBD",
+			highlight: "#5AD3D1",
+        		label: "Prefixes Without Packet Loss"
+		}
+	  ]
+	  var ctx = $("#myChart").get(0).getContext("2d");
+	  var myPieChart = new Chart(ctx).Pie(pie_chart_data);
+
+        });
+
+
+        var diameter = 960,
+            format = d3.format(",d"),
+            color = d3.scale.category20c();
+
+        var bubble = d3.layout.pack()
+            .sort(null)
+            .size([diameter, diameter])
+            .padding(1.5);
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", diameter)
+            .attr("height", diameter)
+            .attr("class", "bubble");
+
+
+        d3.json("bubble_data.json", function(error, root) {
+          if (error) throw error;
+
+          var node = svg.selectAll(".node")
+              .data(bubble.nodes(classes(root))
+              .filter(function(d) { return !d.children; }))
+            .enter().append("g")
+              .attr("class", "node")
+              .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+          node.append("title")
+              .text(function(d) { return d.className + ": " + format(d.value); });
+
+          node.append("circle")
+              .attr("r", function(d) { return d.r; })
+              .style("fill", function(d) { return color(d.packageName); });
+
+          node.append("text")
+              .attr("dy", ".3em")
+              .style("text-anchor", "middle")
+              .text(function(d) { return d.className.substring(0, d.r / 3); });
+        });
+
+        // Returns a flattened hierarchy containing all leaf nodes under the root.
+        function classes(root) {
+          var classes = [];
+
+          function recurse(name, node) {
+            if (node.children) node.children.forEach(function(child) { recurse(node.name, child); });
+            else classes.push({packageName: name, className: node.name, value: node.size});
+          }
+
+          recurse(null, root);
+          return {children: classes};
+        }
+
+        d3.select(self.frameElement).style("height", diameter + "px");
+
+    </script>
+  </body>
+</html>
+
