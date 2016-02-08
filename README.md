@@ -39,7 +39,7 @@ This was all done with the following steps:
   * Verified distribution of RRC peers to 
 * Decide most dramatic change would be withdrawal/annouce of amsterdam
 * Take snapshot pre and post amsterdam announcements
-* Process by reversing as path and removing extra AS47065 and translating mux tag AS to mux name.(
+* Process by reversing as path and removing extra AS47065 and translating mux tag AS to mux name.
  * We peer to PEERING testbed who then peers to internet peers putting as47065 on twice this would leave a useless level on the diagram
   * 25152 6939 47065 263844 47065  becomes  47065 seattle01 6939 25152
  * Pass output to Visualization generation tools
