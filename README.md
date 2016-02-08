@@ -17,14 +17,14 @@ Bellow is the google map of geolocation of the muxes(green stars) and Atlas ripe
 Any casted prefix: announce 184.164.241.0/24
 Location of the muxes: 
 
-Prepended AS, Node, Host, Type, IP
-61574 ,amsterdam01, Amsterdam IX, IX, 100.126.4.3
-61575, cornell01, Cornell University
-61576, gatech01,Georgia Tech, University, 100.126.5.4
-263842, isi01, ISI, University, 100.126.1.2
-263844, seattle01, Seattle IX, IX, 100.126.0.4
-263843, ufmg01, UFMG, University, 100.126.6.2
-47065, phoenix01, Phoneix IX, IX, 100.126.3.2
+* Prepended AS, Node, Host, Type, IP
+* 61574 ,amsterdam01, Amsterdam IX, IX, 100.126.4.3
+* 61575, cornell01, Cornell University
+* 61576, gatech01,Georgia Tech, University, 100.126.5.4
+* 263842, isi01, ISI, University, 100.126.1.2
+* 263844, seattle01, Seattle IX, IX, 100.126.0.4
+* 263843, ufmg01, UFMG, University, 100.126.6.2
+* 47065, phoenix01, Phoneix IX, IX, 100.126.3.2
 
 ##Control Plane view:
 Anycasting is fundamentally done on the control plane at the AS level per prefix.  This means it’s important to observe what happens during a routing change at the AS level. We made this easier by appending an unique AS number tied to each mux(Anycast node). This data is easily accessible from Looking glasses peered around the world. We chose to utilize RIPE’s RRC(remote route collectors) as they are easiest to use during our limited timeframe but this controlplane information could easily come from bgpstream or other tools to allow time based views. 
