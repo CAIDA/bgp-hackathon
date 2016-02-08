@@ -15,8 +15,8 @@ Bellow is the google map of geolocation of the muxes(green stars) and Atlas ripe
 ![alt text](https://github.com/darkfiberiru/anycast-1/blob/master/graphs/VP.png)
 
 Any casted prefix: announce 184.164.241.0/24
-Location of the muxes: 
 
+Location of the muxes: 
 * Prepended AS, Node, Host, Type, IP
 * 61574 ,amsterdam01, Amsterdam IX, IX, 100.126.4.3
 * 61575, cornell01, Cornell University
@@ -41,8 +41,7 @@ This was all done with the following steps:
 * Take snapshot pre and post amsterdam announcements
 * Process by reversing as path and removing extra AS47065 and translating mux tag AS to mux name.(
  * We peer to PEERING testbed who then peers to internet peers putting as47065 on twice this would leave a useless level on the diagram
- * 25152 6939 47065 263844 47065  becomes  47065 seattle01 6939 25152
-*Pass output to Visualization generation tools
+ * 25152 6939 47065 263844 47065  becomes  47065 seattle01 6939 25152 Pass output to Visualization generation tools
 
 ## Data Plane view:
 Changes in the control plane usually have an effect on the data plane. In order to quantify these changes we perform periodic traceroute measurements, using RIPE Atlas. A direct comparison is not possible because traceroutes provide a more detailed view of the network than is possible when looking at the control plane. Therefore, to be able to compare the data plane with the control plane, we decrease the level of detail of the data plane measurement, from the IP-level to the AS-level. We do this by converting each hop in the traceroute on the dataplane to its corresponding AS number, and merging sequential AS numbers that are equal. Lastly, the output is converted to the format that is required for visualization using the D3-framework.
