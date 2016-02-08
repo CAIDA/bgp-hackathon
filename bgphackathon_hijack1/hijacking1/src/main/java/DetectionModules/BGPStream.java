@@ -21,20 +21,21 @@ public class BGPStream {
     public void start(){
         Socket clientSocket = null;
         try {
-            clientSocket = new Socket("comet-17-06.sdsc.edu", 8888);
+            clientSocket = new Socket("comet-17-29.sdsc.edu", 8888);
             BufferedReader bis = new BufferedReader(new
                     InputStreamReader(clientSocket.getInputStream()));
 
             String inputLine;
             while ((inputLine = bis.readLine()) != null){
-                System.out.println(inputLine);
+
 
                 if(isAnomaly(inputLine)){
                     // test anomaly
                     // need to react.
-
-                    DeAggregation deaggr = new DeAggregation("gatech01", Config.ownPrefix);
-                    deaggr.doDeAggr2();
+                    System.out.println("Anomaly Detected");
+                    System.out.println(inputLine);
+                    //DeAggregation deaggr = new DeAggregation("gatech01", Config.ownPrefix);
+                    //deaggr.doDeAggr2();
                 }
             }
             clientSocket.close();
