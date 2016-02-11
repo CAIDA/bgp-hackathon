@@ -8,7 +8,7 @@ Companies that want to adopt any casting have the following:
 * What will happen if a peer goes down?
 
 ## Experiment Methodology:
-Using the PEERING [2] platform, we simulate a service that hopes to benefit from anycasting. In short, we set up 7 muxes a.k.a peers for the chosen prefixes. We use RIPE atlas probes to repeatedly traceroute to the prefix from different geolocation. Then, we announce this prefix from the muxes. Wait for a while and then after sometimes we terminate the most popular mutex. We use both the traceroutes and BGP ripe collector(looking glasses) to monitor the changes.
+Using the PEERING [2] platform, we simulate a service that hopes to benefit from anycasting. In short, we set up 7 muxes a.k.a peers for the chosen prefixes. We use RIPE atlas probes to repeatedly traceroute to the prefix from different geolocation. Then, we announce this prefix from the muxes. Wait for a while and then after sometimes we terminate the most popular muxe. We use both the traceroutes and BGP ripe collector(looking glasses) to monitor the changes.
 
 Bellow is the google map of geolocation of the muxes(green stars) and Atlas ripe probes(red circles) where the traceroutes to muxes are originated from:
 
